@@ -55,7 +55,7 @@
                                 </button>
                                 </div>
                                 <div class="modal-body">
-                                    Voulez-vous supprimer Categorie: {{$a->nom}} , ainsi ses sous_categories 
+                                    Voulez-vous supprimer Categorie: {{$a->nom}} , ainsi ses sous_categories  ?
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
