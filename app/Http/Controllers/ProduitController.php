@@ -68,7 +68,8 @@ class ProduitController extends Controller
         return view('Admin.Products.UpdateProduit', compact('prod', 'img', 'vr'));
     }
 
-    public function updateprod(Request $request ,$id){
+    public function updateprod(Request $request, $id)
+    {
         $prod = Produit::findorfail($id);
         $prod->name = $request->name;
         $prod->slugon = $request->slugon;
@@ -95,59 +96,24 @@ class ProduitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $i=0;
-     $this->updateprod( $request ,$id);
+        $i = 0;
+        $this->updateprod($request, $id);
 
         if ($request->input('typeProduct') == 'configurable') {
+            $varianteproduit = VariableProduit::where('product_id', "=", $id)->get();
 
             // $varianteproduit = VariableProduit::find($id);
-            $varianteproduit = VariableProduit::where('product_id', "=", $id)->get();
             $nbr = count($varianteproduit);
-            $nbrreq = count($request->input('prixx_initial'));
-            $reslt=$nbr-$nbrreq;
-            dd($reslt);
+            if (empty($request->input('prixx_initial'))) {
+                $nbrreq = 0;
+            } else {
+                $nbrreq = count($request->input('prixx_initial'));
+            }
+            $reslt = $nbr - $nbrreq;
             // dd($reslt);
-            // dd($varianteproduit[0]);
-            if ($reslt <= 0) {
-                for($j=0;$j<($nbr);$j++)  {
-                    $varianteproduit[$j]->type = 'taille';
-                    $varianteproduit[$j]->colorval='NULL';
-                    // dd($nbrcolor=count( $request->input('colorval')),$request->input('colorval'));
-                    if ($request->typeCT[$j] == 'color') {
-                      
-                        $varianteproduit[$j]->type = 'color';
-                        //  dd($request->input('colorval')[$item]);
-                        $varianteproduit[$j]->colorval = $request->input('colorval')[$i];
-                        $i++;
-                    }
-                    $varianteproduit[$j]->value = $request->input('valeur')[$j];
-                    $varianteproduit[$j]->prix_initial = $request->input('prixx_initial')[$j];
-                    $varianteproduit[$j]->prix_redution = $request->input('prixx_redution')[$j];
-                    $varianteproduit[$j]->prix_achat = $request->input('prixx_achat')[$j];
-                    $varianteproduit[$j]->quantite = $request->input('quantitex')[$j];
-                    $varianteproduit[$j]->save();
-                }
-                for($j=0;$j< (-$reslt);$j++) {
-                    $varianteproduit = new VariableProduit();
-                    $varianteproduit->product_id = $id;
-                    $varianteproduit->type = 'taille';
-                    $varianteproduit->colorval = null;
-                    if ($request->typeCT[$j+$nbr] === 'color') {
-
-                        $varianteproduit->type = 'color';
-                        $varianteproduit->colorval = $request->input('colorval')[$i];
-                        $i++;
-                    }
-                    $varianteproduit->value = $request->input('valeur')[$j+$nbr];
-                    $varianteproduit->prix_initial = $request->input('prixx_initial')[$j+$nbr];
-                    $varianteproduit->prix_redution = $request->input('prixx_redution')[$j+$nbr];
-                    $varianteproduit->prix_achat = $request->input('prixx_achat')[$j+$nbr];
-                    $varianteproduit->quantite = $request->input('quantitex')[$j+$nbr];
-                    $varianteproduit->save();
-                }
-            } 
-            elseif ($nbr == 0) {
-
+            //premier if passage de simple vers configurable
+            if ($nbr == 0) {
+                $b = 0;
                 // dd(count($request->input('prixx_initial')));
                 foreach ($request->input('prixx_initial') as $item => $v) {
                     $varianteproduit = new VariableProduit();
@@ -156,7 +122,8 @@ class ProduitController extends Controller
                     $varianteproduit->colorval = null;
                     if ($request->typeCT[$item] === 'color') {
                         $varianteproduit->type = 'color';
-                        $varianteproduit->colorval = $request->input('colorval')[$item];
+                        $varianteproduit->colorval = $request->input('colorval')[$b];
+                        $b++;
                     }
                     $varianteproduit->value = $request->input('valeur')[$item];
                     $varianteproduit->prix_initial = $request->input('prixx_initial')[$item];
@@ -165,8 +132,72 @@ class ProduitController extends Controller
                     $varianteproduit->quantite = $request->input('quantitex')[$item];
                     $varianteproduit->save();
                 }
+            } else {
+                $updatedvar = $request->idexist;
+                $exested_var = $request->idexist2;
+                if (empty($request->idexist) || empty($request->idexist2)) {
+                    $count_var_rester = 0;
+                    $diffirence = $exested_var;
+                } else {
+                    $count_var_rester = count($request->idexist);
+                    $diffirence = array_diff($exested_var, $updatedvar);
+                }
+
+
+
+                $count_var = count($request->idexist2);
+
+                if ($count_var > $count_var_rester) {
+                    foreach ($diffirence as $item => $v) {
+
+                        VariableProduit::destroy($diffirence[$item]);
+                        // $varpro_to_delete->destroy();
+                    }
+                }
+                $varianteproduit2 = VariableProduit::where('product_id', "=", $id)->get();
+                $nbr2 = count($varianteproduit2);
+
+                $restl2 = $nbr2 - $nbrreq;
+
+                //premiere boucle pour modifier
+                for ($j = 0; $j < ($count_var_rester); $j++) {
+                    $varianteproduit2[$j]->type = 'taille';
+                    $varianteproduit2[$j]->colorval = 'NULL';
+                    // dd($nbrcolor=count( $request->input('colorval')),$request->input('colorval'));
+                    if ($request->typeCT[$j] == 'color') {
+
+                        $varianteproduit2[$j]->type = 'color';
+                        //  dd($request->input('colorval')[$item]);
+                        $varianteproduit2[$j]->colorval = $request->input('colorval')[$i];
+                        $i++;
+                    }
+                    $varianteproduit2[$j]->value = $request->input('valeur')[$j];
+                    $varianteproduit2[$j]->prix_initial = $request->input('prixx_initial')[$j];
+                    $varianteproduit2[$j]->prix_redution = $request->input('prixx_redution')[$j];
+                    $varianteproduit2[$j]->prix_achat = $request->input('prixx_achat')[$j];
+                    $varianteproduit2[$j]->quantite = $request->input('quantitex')[$j];
+                    $varianteproduit2[$j]->save();
+                }
+                // dd($restl2, $nbr2, $nbrreq, $count_var_rester);
+                for ($j = 0; $j < (-$restl2); $j++) {
+                    $varianteproduit = new VariableProduit();
+                    $varianteproduit->product_id = $id;
+                    $varianteproduit->type = 'taille';
+                    $varianteproduit->colorval = null;
+                    if ($request->typeCT[$j + $nbr2] === 'color') {
+
+                        $varianteproduit->type = 'color';
+                        $varianteproduit->colorval = $request->input('colorval')[$i];
+                        $i++;
+                    }
+                    $varianteproduit->value = $request->input('valeur')[$j + $nbr2];
+                    $varianteproduit->prix_initial = $request->input('prixx_initial')[$j + $nbr2];
+                    $varianteproduit->prix_redution = $request->input('prixx_redution')[$j + $nbr2];
+                    $varianteproduit->prix_achat = $request->input('prixx_achat')[$j + $nbr2];
+                    $varianteproduit->quantite = $request->input('quantitex')[$j + $nbr2];
+                    $varianteproduit->save();
+                }
             }
-            
         }
     }
 
