@@ -1,0 +1,9 @@
+.product-image {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #dcdee3;
+    margin: 3px;
+    position: relative;
+    display: inline-block;
+    background-size: cover;
+}
