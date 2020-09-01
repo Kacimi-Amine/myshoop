@@ -100,8 +100,11 @@
                                 
                                   
                                     {{-- add variabl --}}
+
                                   @foreach ($vr as $var)
-                                  <div class="col-md-15  table-responsive" id="ct2{{ $var->id }}">
+                                    <input type="hidden"  name="idexist2[]"  value="{{$var->id}}">
+                            
+                                    <div class="col-md-15  table-responsive" id="ct2{{ $var->id }}">
                                     <table class="table table-bordered " style="min-width: 550px;">
                                     <thead>
                                     <tr class="bg-light">
@@ -128,6 +131,8 @@
                                         <input id="{{ $var->id }}" type="color" name="colorval[]" value="{{ $var->colorval }}" />
                                         @endif
                                      <input type="hidden"  name="typeCT[]" id="typeCTT{{ $var->id }}" value="{{$var->type ?? 'taille'}}">
+                                     <input type="hidden"  name="idexist[]"  value="{{$var->id}}">
+                                     
                                      <input placeholder="value" type="text"  value="{{$var->value}}" class="form-control"name='valeur[]' >
                                      
                                      </td>
