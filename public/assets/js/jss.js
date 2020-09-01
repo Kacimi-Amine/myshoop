@@ -83,8 +83,12 @@ function removeRow2(i) {
   document.getElementById('ct2' + i).remove();
 }
 
-function removeinput(i) {
+function removeinput(i, j) {
   document.getElementById('inp' + i).remove();
+  document.getElementById("divhid" + i).insertAdjacentHTML('beforeend', ' <input value="uploads/images/' + j + ' "   type="hidden" name="img_to_delete[]">');
+
+
+
 }
 //pour iviter rwina des ids...
 function myFunction22(i) {
