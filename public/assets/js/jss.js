@@ -80,11 +80,15 @@ function removeRow(i) {
   document.getElementById('ct' + i).remove();
 }
 function removeRow2(i) {
-  document.getElementById('ct2'  + i).remove();
+  document.getElementById('ct2' + i).remove();
 }
 
-function removeinput(i) {
+function removeinput(i, j) {
   document.getElementById('inp' + i).remove();
+  document.getElementById("divhid" + i).insertAdjacentHTML('beforeend', ' <input value="uploads/images/' + j + ' "   type="hidden" name="img_to_delete[]">');
+
+
+
 }
 //pour iviter rwina ...
 function myFunction22(i) {
