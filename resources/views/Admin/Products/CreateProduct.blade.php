@@ -205,7 +205,7 @@
                 // //reset dropzone
                 // $('.dropzone-previews').empty();
                 // console.log(produitid.value);
-                window.location.replace("/admin/update/produit/"+produitid.value)
+                window.location.replace("product/update/"+produitid.value)
             });
     
         }
