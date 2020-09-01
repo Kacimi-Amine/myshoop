@@ -243,7 +243,7 @@
                            
                             if(result.etat==0){
                                 myDropzone.processQueue();
-                               alert(result.etat,'done');
+                            //    alert(result.etat,'done');
                                  location.reload();
 
                             }
