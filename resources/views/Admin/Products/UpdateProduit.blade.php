@@ -12,8 +12,8 @@
                     {{-- <div class="form-wrapper "> --}}
                         <!-- form starts -->
                         
-                        <form action="{{ route('updateProduit',$prod->id) }}" name="demoform" id="demoform" method="POST" class="dropzone" enctype="multipart/form-data">
-                            
+                        <form action="{{ route('updateProduit',$prod->id) }}" name="demoform" id="demoform" method="PUT" class="dropzone" enctype="multipart/form-data">
+                            {{ method_field('PUT') }}
                             @csrf 
                             <div class="form-group">
                                
@@ -165,24 +165,27 @@
                               
                                     <div class="form-group">
                                         <div id="dropzone" class="dz-default dz-message dropzoneDragArea">
-                                            <span>Upload file</span>
+                                            <span>Upload image</span>
                                         </div>
                                         <div class="dropzone-previews">
                                             
                                             @foreach ($img as $im)
+                                            <div  style="display: none" id="divhid{{ $im->id}}"></div>
+                                                <input value="{{ $im->id}}"   type="hidden"  name="imginit[]">
+
                                             {{-- <img src="{{ asset( '/uploads/images/'.$im->filename.'') }}" > --}}
 
                                             <div class="product-image draggable-item ui-sortable-handle" id="inp{{ $im->id}}" style="background-image: url('/uploads/images/{{$im->filename  }}')">
 
                                                 {{-- background-image: url("/uploads/sm/260720191836261429765921.jpg"); position: relative; left: 0px; top: 0px; --}}
-                                                <input value="/uploads/images/{{$im->filename}}"  id="inp{{ $im->id}}"     style="display:none"   name="productIm[]">
-                                                <i class="fa fa-times delete" onclick="removeinput({{ $im->id }})"></i>
+                                                <input value="{{$im->id}}"  id="inp{{ $im->id}}"     type="hidden"   name="image_restant[]">
+                                                <i class="fa fa-times delete" onclick="removeinput({{ $im->id }},'{{ $im->filename }}')"></i>
                                             </div>
                                             @endforeach
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                      <button type="submit" class="btn btn-md btn-primary">create</button>
+                                    <div class="form-group" align="center">
+                                      <button type="submit"  class="btn btn-md btn-outline-success" >Update</button>
                                   </div>
                               </form>
                             </div>
@@ -199,14 +202,18 @@
  <script>
     Dropzone.autoDiscover = false;
     // Dropzone.options.demoform = false;	
-    
+    var y={{ $prod->id }};
+    console.log(y);
     $(function() {
     var myDropzone = new Dropzone("div#dropzone", { 
         headers: {
                                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                             },
         type: 'PUT',
-        url: "{{ url('admin/updateimage/{  $prod->id }') }}",
+        url: "{{ url('admin/product/updateimage/') }}"+'/'+y,
+        // url: "{{ url('admin/updateimage/{  $prod->id }') }}",
+        //  url : '{{url("admin/recipients")}}' + '/' + news,
+        
         paramName: "file",
         previewsContainer: 'div.dropzone-previews',
         // addRemoveLinks: true,
@@ -233,10 +240,17 @@
                             var produitid = result.produit_id;
                             $("#produitid").val(produitid); // inseting produitid into hidden input field
                             //process the queue
-                            myDropzone.processQueue();
+                           
+                            if(result.etat==0){
+                                myDropzone.processQueue();
+                               alert(result.etat,'done');
+                                 location.reload();
+
+                            }
+                           
                         }else{
 
-                            console.log(formData);
+                            console.log(error);
                         }
                     }
                 });
@@ -253,8 +267,8 @@
                 // $('#demoform')[0].reset();
                 // //reset dropzone
                 // $('.dropzone-previews').empty();
-                // console.log(produitid.value);
-                window.location.replace("/admin/product/update/"+produitid.value)
+                //  console.log(produitid.value);
+                 window.location.replace("/admin/product/update/"+produitid.value)
             });
     
         }

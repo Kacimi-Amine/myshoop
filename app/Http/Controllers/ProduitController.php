@@ -179,6 +179,28 @@ class ProduitController extends Controller
                 }
             }
         }
+        //update image
+        if (empty($request->image_restant)) {
+            $difference2 = $request->imginit;
+        } else {
+            $image_restant = $request->image_restant;
+            $image_initial = $request->imginit;
+            $difference2 = array_diff($image_initial, $image_restant);
+            // $data[] = $difference2;
+        }
+
+        if (!empty($request->img_to_delete) && !empty($difference2)) {
+            foreach ($request->img_to_delete as $item => $v) {
+                // dd($request->img_to_delete[$item], $difference2[$item]);
+                if (file_exists(public_path($request->img_to_delete[$item]))) {
+                    unlink(public_path($request->img_to_delete[$item]));
+                }
+            }
+            foreach ($difference2 as $item => $v) {
+                Image::destroy($difference2);
+            }
+        }
+        return response()->json(['status' => "success", 'produit_id' => 3, 'etat' => 0]);
     }
     /**
      * Remove the specified resource from storage.
@@ -243,6 +265,8 @@ class ProduitController extends Controller
         }
         return $filename;
     }
+
+
     public function storeImage(Request $request)
     {
         $produitid = $request->produitid;
@@ -266,25 +290,24 @@ class ProduitController extends Controller
     }
     public function updateImage(Request $request, $id)
     {
-        $produitid = $request->produitid;
+
+        // dd($request->file);
+        // $produitid = $request->produitid;
         if ($request->file('file')) {
             $img = $request->file('file');
             //here we are geeting produitid alogn with an image
             $imageName = strtotime(now()) . rand(11111, 99999) . '.' . $img->getClientOriginalExtension();
-            $produit_image = Image::findorfail($id);
+            $produit_image = new Image();
             $original_name = $img->getClientOriginalName();
             $produit_image->filename = $imageName;
             if (!is_dir(public_path() . '/uploads/images/')) {
                 mkdir(public_path() . '/uploads/images/', 0777, true);
             }
             $request->file('file')->move(public_path() . '/uploads/images/', $imageName);
-            // we are updating our image column with the help of produit id
-            foreach ($request->input('productIm') as $item => $v) {
-                $produit_image->filename = $request->input('productIm')[$item];
-                $produit_image->save();
-            }
-            // return redirect("/update/produit/"+$produitid );
-            return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $produitid]);
+            $produit_image->product_id = $id;
+            $produit_image->save();
+
+            return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $id, 'etat' => 1]);
         }
     }
 }
