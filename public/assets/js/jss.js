@@ -80,13 +80,13 @@ function removeRow(i) {
   document.getElementById('ct' + i).remove();
 }
 function removeRow2(i) {
-  document.getElementById('ct2'  + i).remove();
+  document.getElementById('ct2' + i).remove();
 }
 
 function removeinput(i) {
   document.getElementById('inp' + i).remove();
 }
-//pour iviter rwina ...
+//pour iviter rwina des ids...
 function myFunction22(i) {
   console.log(i);
   var x = document.getElementById("mySelectt" + i).value;
