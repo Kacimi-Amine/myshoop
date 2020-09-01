@@ -200,7 +200,7 @@
             });
             
             this.on("success", function (file, response) {
-              
+
                 window.location.replace("/admin/product/update/"+produitid.value)
             });
     

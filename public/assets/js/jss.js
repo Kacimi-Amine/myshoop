@@ -90,7 +90,7 @@ function removeinput(i, j) {
 
 
 }
-//pour iviter rwina ...
+//pour iviter rwina des ids...
 function myFunction22(i) {
   console.log(i);
   var x = document.getElementById("mySelectt" + i).value;
