@@ -200,12 +200,8 @@
             });
             
             this.on("success", function (file, response) {
-                // //reset the form
-                // $('#demoform')[0].reset();
-                // //reset dropzone
-                // $('.dropzone-previews').empty();
-                // console.log(produitid.value);
-                window.location.replace("product/update/"+produitid.value)
+              
+                window.location.replace("/admin/product/update/"+produitid.value)
             });
     
         }
