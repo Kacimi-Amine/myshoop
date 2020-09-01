@@ -19,7 +19,6 @@ class ProduitController extends Controller
     {
         //
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -29,7 +28,6 @@ class ProduitController extends Controller
     {
         //
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -40,7 +38,6 @@ class ProduitController extends Controller
     {
         //
     }
-
     /**
      * Display the specified resource.
      *
@@ -51,7 +48,6 @@ class ProduitController extends Controller
     {
         //
     }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -60,22 +56,19 @@ class ProduitController extends Controller
      */
     public function edit($id)
     {
-
         $prod = Produit::findorfail($id);
         $img = Image::where('product_id', $id)->get();
         $vr = VariableProduit::where('product_id', $id)->get();
-
         return view('Admin.Products.UpdateProduit', compact('prod', 'img', 'vr'));
     }
-
-    public function updateprod(Request $request ,$id){
+    public function updateprod(Request $request, $id)
+    {
         $prod = Produit::findorfail($id);
         $prod->name = $request->name;
         $prod->slugon = $request->slugon;
         $prod->description = $request->description;
         $prod->sous_category = $request->sous_category;
         $prod->type = $request->typeProduct;
-
         if ($request->typeProduct == 'simple') {
             $prod->prix_initial = $request->prix_initial;
             $prod->prix_redution = $request->prix_redution;
@@ -85,7 +78,6 @@ class ProduitController extends Controller
         // if() hna l etat w moraha l contdown..
         $prod->save();
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -95,59 +87,22 @@ class ProduitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $i=0;
-     $this->updateprod( $request ,$id);
-
+        $i = 0;
+        $this->updateprod($request, $id);
         if ($request->input('typeProduct') == 'configurable') {
-
-            // $varianteproduit = VariableProduit::find($id);
             $varianteproduit = VariableProduit::where('product_id', "=", $id)->get();
+            // $varianteproduit = VariableProduit::find($id);
             $nbr = count($varianteproduit);
-            $nbrreq = count($request->input('prixx_initial'));
-            $reslt=$nbr-$nbrreq;
-            dd($reslt);
+            if (empty($request->input('prixx_initial'))) {
+                $nbrreq = 0;
+            } else {
+                $nbrreq = count($request->input('prixx_initial'));
+            }
+            $reslt = $nbr - $nbrreq;
             // dd($reslt);
-            // dd($varianteproduit[0]);
-            if ($reslt <= 0) {
-                for($j=0;$j<($nbr);$j++)  {
-                    $varianteproduit[$j]->type = 'taille';
-                    $varianteproduit[$j]->colorval='NULL';
-                    // dd($nbrcolor=count( $request->input('colorval')),$request->input('colorval'));
-                    if ($request->typeCT[$j] == 'color') {
-                      
-                        $varianteproduit[$j]->type = 'color';
-                        //  dd($request->input('colorval')[$item]);
-                        $varianteproduit[$j]->colorval = $request->input('colorval')[$i];
-                        $i++;
-                    }
-                    $varianteproduit[$j]->value = $request->input('valeur')[$j];
-                    $varianteproduit[$j]->prix_initial = $request->input('prixx_initial')[$j];
-                    $varianteproduit[$j]->prix_redution = $request->input('prixx_redution')[$j];
-                    $varianteproduit[$j]->prix_achat = $request->input('prixx_achat')[$j];
-                    $varianteproduit[$j]->quantite = $request->input('quantitex')[$j];
-                    $varianteproduit[$j]->save();
-                }
-                for($j=0;$j< (-$reslt);$j++) {
-                    $varianteproduit = new VariableProduit();
-                    $varianteproduit->product_id = $id;
-                    $varianteproduit->type = 'taille';
-                    $varianteproduit->colorval = null;
-                    if ($request->typeCT[$j+$nbr] === 'color') {
-
-                        $varianteproduit->type = 'color';
-                        $varianteproduit->colorval = $request->input('colorval')[$i];
-                        $i++;
-                    }
-                    $varianteproduit->value = $request->input('valeur')[$j+$nbr];
-                    $varianteproduit->prix_initial = $request->input('prixx_initial')[$j+$nbr];
-                    $varianteproduit->prix_redution = $request->input('prixx_redution')[$j+$nbr];
-                    $varianteproduit->prix_achat = $request->input('prixx_achat')[$j+$nbr];
-                    $varianteproduit->quantite = $request->input('quantitex')[$j+$nbr];
-                    $varianteproduit->save();
-                }
-            } 
-            elseif ($nbr == 0) {
-
+            //premier if passage de simple vers configurable
+            if ($nbr == 0) {
+                $b = 0;
                 // dd(count($request->input('prixx_initial')));
                 foreach ($request->input('prixx_initial') as $item => $v) {
                     $varianteproduit = new VariableProduit();
@@ -156,7 +111,8 @@ class ProduitController extends Controller
                     $varianteproduit->colorval = null;
                     if ($request->typeCT[$item] === 'color') {
                         $varianteproduit->type = 'color';
-                        $varianteproduit->colorval = $request->input('colorval')[$item];
+                        $varianteproduit->colorval = $request->input('colorval')[$b];
+                        $b++;
                     }
                     $varianteproduit->value = $request->input('valeur')[$item];
                     $varianteproduit->prix_initial = $request->input('prixx_initial')[$item];
@@ -165,11 +121,87 @@ class ProduitController extends Controller
                     $varianteproduit->quantite = $request->input('quantitex')[$item];
                     $varianteproduit->save();
                 }
+            } else {
+                $updatedvar = $request->idexist;
+                $exested_var = $request->idexist2;
+                if (empty($request->idexist) || empty($request->idexist2)) {
+                    $count_var_rester = 0;
+                    $diffirence = $exested_var;
+                } else {
+                    $count_var_rester = count($request->idexist);
+                    $diffirence = array_diff($exested_var, $updatedvar);
+                }
+                $count_var = count($request->idexist2);
+                if ($count_var > $count_var_rester) {
+                    foreach ($diffirence as $item => $v) {
+                        VariableProduit::destroy($diffirence[$item]);
+                        // $varpro_to_delete->destroy();
+                    }
+                }
+                $varianteproduit2 = VariableProduit::where('product_id', "=", $id)->get();
+                $nbr2 = count($varianteproduit2);
+                $restl2 = $nbr2 - $nbrreq;
+                //premiere boucle pour modifier
+                for ($j = 0; $j < ($count_var_rester); $j++) {
+                    $varianteproduit2[$j]->type = 'taille';
+                    $varianteproduit2[$j]->colorval = 'NULL';
+                    // dd($nbrcolor=count( $request->input('colorval')),$request->input('colorval'));
+                    if ($request->typeCT[$j] == 'color') {
+                        $varianteproduit2[$j]->type = 'color';
+                        //  dd($request->input('colorval')[$item]);
+                        $varianteproduit2[$j]->colorval = $request->input('colorval')[$i];
+                        $i++;
+                    }
+                    $varianteproduit2[$j]->value = $request->input('valeur')[$j];
+                    $varianteproduit2[$j]->prix_initial = $request->input('prixx_initial')[$j];
+                    $varianteproduit2[$j]->prix_redution = $request->input('prixx_redution')[$j];
+                    $varianteproduit2[$j]->prix_achat = $request->input('prixx_achat')[$j];
+                    $varianteproduit2[$j]->quantite = $request->input('quantitex')[$j];
+                    $varianteproduit2[$j]->save();
+                }
+                // dd($restl2, $nbr2, $nbrreq, $count_var_rester);
+                for ($j = 0; $j < (-$restl2); $j++) {
+                    $varianteproduit = new VariableProduit();
+                    $varianteproduit->product_id = $id;
+                    $varianteproduit->type = 'taille';
+                    $varianteproduit->colorval = null;
+                    if ($request->typeCT[$j + $nbr2] === 'color') {
+                        $varianteproduit->type = 'color';
+                        $varianteproduit->colorval = $request->input('colorval')[$i];
+                        $i++;
+                    }
+                    $varianteproduit->value = $request->input('valeur')[$j + $nbr2];
+                    $varianteproduit->prix_initial = $request->input('prixx_initial')[$j + $nbr2];
+                    $varianteproduit->prix_redution = $request->input('prixx_redution')[$j + $nbr2];
+                    $varianteproduit->prix_achat = $request->input('prixx_achat')[$j + $nbr2];
+                    $varianteproduit->quantite = $request->input('quantitex')[$j + $nbr2];
+                    $varianteproduit->save();
+                }
             }
-            
         }
-    }
+        //update image
+        if (empty($request->image_restant)) {
+            $difference2 = $request->imginit;
+        } else {
+            $image_restant = $request->image_restant;
+            $image_initial = $request->imginit;
+            $difference2 = array_diff($image_initial, $image_restant);
+            // $data[] = $difference2;
+        }
 
+        if (!empty($request->img_to_delete) && !empty($difference2)) {
+            foreach ($request->img_to_delete as $item => $v) {
+                // dd($request->img_to_delete[$item], $difference2[$item]);
+                if (file_exists(public_path($request->img_to_delete[$item]))) {
+                    unlink(public_path($request->img_to_delete[$item]));
+                }
+            }
+            foreach ($difference2 as $item => $v) {
+                Image::destroy($difference2);
+            }
+        }
+        return response()->json(['status' => "success", 'produit_id' => 3, 'etat' => 0]);
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -180,11 +212,8 @@ class ProduitController extends Controller
     {
         //
     }
-
-
     public function storeData(ProductRequest $request)
     {
-
         try {
             $produit = new Produit();
             $produit->name = $request->name;
@@ -201,12 +230,9 @@ class ProduitController extends Controller
             // if() hna l etat w moraha l contdown..
             $produit->save();
             $user_id = $produit->id; // this give us the last inserted record id
-
             //add variable 
             if ($request->input('typeProduct') == 'configurable') {
-
                 //   $varianteproduit->type= $request->input('type');
-
                 foreach ($request->input('prixx_initial') as $item => $v) {
                     $varianteproduit = new VariableProduit();
                     // dd(isset($request->typeCT[$item])=='color');
@@ -244,25 +270,17 @@ class ProduitController extends Controller
     public function storeImage(Request $request)
     {
         $produitid = $request->produitid;
-
         if ($request->file('file')) {
-
             $img = $request->file('file');
-
             //here we are geeting produitid alogn with an image
-
-
             $imageName = strtotime(now()) . rand(11111, 99999) . '.' . $img->getClientOriginalExtension();
             $produit_image = new Image();
             $original_name = $img->getClientOriginalName();
             $produit_image->filename = $imageName;
-
             if (!is_dir(public_path() . '/uploads/images/')) {
                 mkdir(public_path() . '/uploads/images/', 0777, true);
             }
-
             $request->file('file')->move(public_path() . '/uploads/images/', $imageName);
-
             // we are updating our image column with the help of produit id
             $produit_image->product_id = $request->produitid;
             $produit_image->save();
@@ -270,40 +288,26 @@ class ProduitController extends Controller
             return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $produitid]);
         }
     }
-
-
-
     public function updateImage(Request $request, $id)
     {
-        $produitid = $request->produitid;
 
+        // dd($request->file);
+        // $produitid = $request->produitid;
         if ($request->file('file')) {
-
             $img = $request->file('file');
-
             //here we are geeting produitid alogn with an image
-
-
             $imageName = strtotime(now()) . rand(11111, 99999) . '.' . $img->getClientOriginalExtension();
-            $produit_image = Image::findorfail($id);
+            $produit_image = new Image();
             $original_name = $img->getClientOriginalName();
             $produit_image->filename = $imageName;
-
             if (!is_dir(public_path() . '/uploads/images/')) {
                 mkdir(public_path() . '/uploads/images/', 0777, true);
             }
-
             $request->file('file')->move(public_path() . '/uploads/images/', $imageName);
+            $produit_image->product_id = $id;
+            $produit_image->save();
 
-            // we are updating our image column with the help of produit id
-            foreach ($request->input('productIm') as $item => $v) {
-
-                $produit_image->filename = $request->input('productIm')[$item];
-                $produit_image->save();
-            }
-
-            // return redirect("/update/produit/"+$produitid );
-            return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $produitid]);
+            return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $id, 'etat' => 1]);
         }
     }
 }

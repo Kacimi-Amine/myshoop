@@ -11,6 +11,8 @@
     <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
         <h5>List Categories</h5>
     </div>
+     <x:notify-messages />
+      @notifyJs
     @if (session('message'))
             <div class="alert alert-success">{{ session('message') }}</div>
         @endif
