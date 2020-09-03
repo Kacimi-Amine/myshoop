@@ -6,7 +6,6 @@ use App\Image;
 use App\Produit;
 use App\VariableProduit;
 use Illuminate\Http\Request;
-use App\Http\Requests\Storeimage;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Support\Facades\Session;
 
