@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProductRequest;
 use App\Image;
 use App\Produit;
 use App\VariableProduit;
 use Illuminate\Http\Request;
+use App\Http\Requests\Storeimage;
+use App\Http\Requests\ProductRequest;
+use Illuminate\Support\Facades\Session;
 
 class ProduitController extends Controller
 {
@@ -200,7 +202,7 @@ class ProduitController extends Controller
                 Image::destroy($difference2);
             }
         }
-        return response()->json(['status' => "success", 'produit_id' => 3, 'etat' => 0]);
+        return response()->json(['status' => "success", 'produit_id' => $id, 'etat' => 0]);
     }
     /**
      * Remove the specified resource from storage.
@@ -229,7 +231,7 @@ class ProduitController extends Controller
             }
             // if() hna l etat w moraha l contdown..
             $produit->save();
-            $user_id = $produit->id; // this give us the last inserted record id
+            $product_id = $produit->id; // this give us the last inserted record id
             //add variable 
             if ($request->input('typeProduct') == 'configurable') {
                 //   $varianteproduit->type= $request->input('type');
@@ -242,7 +244,7 @@ class ProduitController extends Controller
                         $varianteproduit->colorval = $request->input('colorval')[$item];
                     }
                     $varianteproduit->value = $request->input('valeur')[$item];
-                    $varianteproduit->product_id = $user_id; //product id !!
+                    $varianteproduit->product_id = $product_id; //product id !!
                     $varianteproduit->prix_initial = $request->input('prixx_initial')[$item];
                     $varianteproduit->prix_redution = $request->input('prixx_redution')[$item];
                     $varianteproduit->prix_achat = $request->input('prixx_achat')[$item];
@@ -253,8 +255,12 @@ class ProduitController extends Controller
         } catch (\Exception $e) {
             return  response()->json(['status' => 'exception', 'msg' => $e->getMessage()]);
         }
-        return response()->json(['status' => "success", 'produit_id' => $user_id]);
+        // $request->session()->flash('message', 'Task was successful!');
+        Session::flash('message', 'produit bien ajouter!');
+        return response()->json(['status' => "success", 'produit_id' => $product_id]);
     }
+
+
     public function fileDestroy(Request $request)
     {
         $filename =  $request->get('filename');
@@ -285,6 +291,8 @@ class ProduitController extends Controller
             $produit_image->product_id = $request->produitid;
             $produit_image->save();
             // return redirect("/update/produit/"+$produitid );
+            Session::flash('message', 'produit bien ajouter!');
+
             return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $produitid]);
         }
     }

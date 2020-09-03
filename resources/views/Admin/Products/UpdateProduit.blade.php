@@ -7,6 +7,16 @@
 <script type="text/javascript" src="{{ URL::asset('assets/js/jss.js') }}"></script>
 <link rel="stylesheet" href="{{ asset('/assets/bootstrap/css/styleprod.css') }}">
  <div>
+     {{-- @if (session('message'))
+            <div class="alert alert-success">{{ session('message') }}</div>
+        @endif --}}
+       
+    @if(Session::has('message'))
+    <p class="alert alert-success">
+       {!! Session::get('message') !!}
+       <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+    </p>
+@endif  
             <div class="row">
                 <div class="col ">
                     {{-- <div class="form-wrapper "> --}}
@@ -164,8 +174,8 @@
                                 
                               
                                     <div class="form-group">
-                                        <div id="dropzone" class="dz-default dz-message dropzoneDragArea">
-                                            <span>Upload image</span>
+                                        <div id="dropzone" class="dropzone needsclick dz-clickable">
+                                           
                                         </div>
                                         <div class="dropzone-previews">
                                             
