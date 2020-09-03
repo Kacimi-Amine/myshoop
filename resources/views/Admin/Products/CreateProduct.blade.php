@@ -7,6 +7,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js"></script>
 <script type="text/javascript" src="{{ URL::asset('assets/js/jss.js') }}"></script>
  <div>
+     <div id="validation-errors">
+     </div>
+    
+     
             <div class="row">
                 <div class="col ">
                     {{-- <div class="form-wrapper "> --}}
@@ -15,19 +19,24 @@
                             
                             @csrf 
                             <div class="form-group">
+                                 
                                 
                                 <input type="hidden" class="produitid" name="produitid" id="produitid" value="">
                                 <label for="name">name</label>
-                                <input type="text" name="name" id="name" placeholder="Enter your slugon" class="form-control" required autocomplete="on">
+                                <input type="text" name="name" id="name" placeholder="Enter your slugon" class="form-control"  autocomplete="on">
+                                <div class="alert-danger" id="nameError"></div>
                      
                                 <label for="name">slugon</label>
-                                <input type="text" name="slugon" id="slugon" placeholder="Enter your slugon" class="form-control" required autocomplete="on">
+                                <input type="text" name="slugon" id="slugon" placeholder="Enter your slugon" class="form-control"  autocomplete="on">
+                                <div class="alert-danger" id="slugonError"></div>
                      
                                 <label for="name">description</label>
-                                <input type="text" name="description" id="name" placeholder="Enter your name" class="form-control" required autocomplete="on">
+                                <input type="text" name="description"   placeholder="Enter your name" class="form-control"  autocomplete="on">
+                                <div class="alert-danger" id="descriptionError"></div>
+
                                 <label for="name">sous_category</label>
-                                <input type="text" name="sous_category" id="name" placeholder="Enter your name" class="form-control" required autocomplete="on">
-                                 
+                                <input type="text" name="sous_category"   placeholder="Enter your name" class="form-control"  autocomplete="on">
+
                                 
                                 <label class="btn btn-light active" id="togg1">simple</label>
                                 <label class="btn btn-light" id="togg2">configurable </label>
@@ -54,7 +63,7 @@
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">DH</span>
                                                     </div> 
-                                                    <input id="regularprice" placeholder="00.00" name="prix_redution" type="text"   class="form-control">
+                                                    <input  placeholder="00.00" name="prix_redution" type="text"   class="form-control">
                                                 </div>
                                                 </div>
                                             </div>
@@ -80,7 +89,7 @@
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">DH</span>
                                                     </div> 
-                                                    <input id="regularprice" placeholder="00.00" name="prix_achat" type="text"   class="form-control">
+                                                    <input  placeholder="00.00" name="prix_achat" type="text"   class="form-control">
                                                 </div>
                                                 </div>
                                             </div>
@@ -127,12 +136,11 @@
                                 
                                 </script>
                                     <div class="form-group">
-                                        <div id="dropzone" class="dz-default dz-message dropzoneDragArea">
-                                            <span>Upload file</span>
+                                        <div id="dropzone" class="dropzone needsclick dz-clickable">
                                         </div>
-                                        <div class="dropzone-previews"></div>
+                                        <div class="dropzone-previews" id="droppreview"></div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" align="center">
                                       <button type="submit" class="btn btn-md btn-primary">create</button>
                                   </div>
                               </form>
@@ -184,12 +192,44 @@
                             var produitid = result.produit_id;
                             $("#produitid").val(produitid); // inseting produitid into hidden input field
                             //process the queue
-                            myDropzone.processQueue();
+
+                            
+                            // if( $.trim($("#droppreview").text())){
+                            // 
+                                
+                            // }
+                            if( $('#droppreview').is(':empty') ) {
+                                console.log('div emty');
+                                //  alert("You will now be redirected.");
+                                window.location.replace("/admin/product/update/"+produitid);
+                            }
+                            else{
+                                console.log('div exist');
+                                myDropzone.processQueue();
+
+                            } 
+
                         }else{
 
-                            console.log(formData);
+                            console.log(result.msg);
                         }
-                    }
+                    },
+                    // error: function (xhr) {
+                    //     // $('#error_email').html('<p>'+ xhr.responseJSON.errors.email[0] + '</p>')
+                    // }
+                    error: function (xhr)
+                    {
+                         $('#validation-errors').html('');
+                    
+                               console.log((xhr.responseJSON.errors));
+                            //    console.log((xhr.responseJSON.errorsscription));
+                                $('#nameError').text(xhr.responseJSON.errors.name);
+                                $('#descriptionError').text(xhr.responseJSON.errors.description);
+
+                                //hadi foreach pour boucler les errors
+                         $.each(xhr.responseJSON.errors, function(key,value) {                            
+                         $('#validation-errors').append('<div class="" ><p  style="color: red">'+value+'</p></div'); }); 
+                    },
                 });
             });
             //Gets triggered when we submit the image.
@@ -198,7 +238,19 @@
               var produitid = document.getElementById('produitid').value;
                formData.append('produitid', produitid);
             });
-            
+
+            //    this.on('complete', function(file, xhr, formData){
+            //             //fetch the produit id from hidden input field and send that produitid with our image
+            //                 window.location.replace("/admin/product/update/"+produitid.value)
+                        
+            //             });
+
+            //  this.on("error",function (file, response,xhr){
+            //             $.each(xhr.responseJSON.errors, function(key,value) {                            
+            //              $('#validation-errors').append('<div class="" ><p  style="color: red">'+value+'</p></div'); }); 
+                   
+                
+            //  });
             this.on("success", function (file, response) {
 
                 window.location.replace("/admin/product/update/"+produitid.value)
