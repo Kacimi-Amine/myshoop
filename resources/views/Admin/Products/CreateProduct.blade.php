@@ -1,12 +1,17 @@
 @extends('admin.layout')
 @section('main')
 <meta name="_token" content="{{csrf_token()}}" />
+<link rel="stylesheet" href="{{ asset('/assets/bootstrap/css/styleprod.css') }}">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+@section('style')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css">
+    <link rel="stylesheet" href="{{ asset('SummerNote/summernote-bs4.min.css') }}">
+@endsection
+{{-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script> --}}
+<script  src="https://code.jquery.com/jquery-3.5.1.min.js"  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="  crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js"></script>
 <script type="text/javascript" src="{{ URL::asset('assets/js/jss.js') }}"></script>
- <div>
+ <div class="">
      <div id="validation-errors">
      </div>
     
@@ -20,7 +25,6 @@
                             @csrf 
                             <div class="form-group">
                                  
-                                
                                 <input type="hidden" class="produitid" name="produitid" id="produitid" value="">
                                 <label for="name">name</label>
                                 <input type="text" name="name" id="name" placeholder="Enter your slugon" class="form-control"  autocomplete="on">
@@ -28,15 +32,26 @@
                      
                                 <label for="name">slugon</label>
                                 <input type="text" name="slugon" id="slugon" placeholder="Enter your slugon" class="form-control"  autocomplete="on">
-                                <div class="alert-danger" id="slugonError"></div>
+                                <div class="alert-danger" id="SlogError"></div>
                      
                                 <label for="name">description</label>
-                                <input type="text" name="description"   placeholder="Enter your name" class="form-control"  autocomplete="on">
+                                <textarea name="description" id="description" class="form-control summernote"></textarea>
                                 <div class="alert-danger" id="descriptionError"></div>
+                                <br>
+                                <label>Categorie</label>
 
-                                <label for="name">sous_category</label>
-                                <input type="text" name="sous_category"   placeholder="Enter your name" class="form-control"  autocomplete="on">
-
+                                 <select class="form-control" name="sous_category">
+                                    <option value="" disabled selected>Choose your category <span class="req">*</span></option>
+                                    @foreach ($categories as $category)
+                                    <option value="{{$category->nom}}" disabled >---- {{$category->nom}} ----</option>
+                                        @foreach ($category->sous_categories as $sous_category)
+                                        <option value="{{ $sous_category->nom}}" {{ old('categorie') == $sous_category->nom ? 'selected' : ''}}>
+                                            {{ $sous_category->nom}}
+                                        </option>
+                                        @endforeach
+                                    @endforeach
+                                </select>
+                                <br>
                                 
                                 <label class="btn btn-light active" id="togg1">simple</label>
                                 <label class="btn btn-light" id="togg2">configurable </label>
@@ -99,7 +114,7 @@
                                 </div>
                                 </div>
                                 <div id="d2" style="display: none">
-                                  <input type="button" value="ajouter une variable" onclick="addRow()">
+                                  <input type="button" class=" btn btn-success" value="ajouter une variable" onclick="addRow()">
                                 {{--  
                                   <input type="radio" name="typevar" id="typevar" onclick="addcol()"> color
                                   <input type="radio" name="typevar" id="typevar"> taille --}}
@@ -224,10 +239,11 @@
                                console.log((xhr.responseJSON.errors));
                             //    console.log((xhr.responseJSON.errorsscription));
                                 $('#nameError').text(xhr.responseJSON.errors.name);
+                                $('#SlogError').text(xhr.responseJSON.errors.slugon);
                                 $('#descriptionError').text(xhr.responseJSON.errors.description);
-
+                                                              
                                 //hadi foreach pour boucler les errors
-                         $.each(xhr.responseJSON.errors, function(key,value) {                            
+                         $.each(xhr.responseJSON.errors, function(key,value) {    
                          $('#validation-errors').append('<div class="" ><p  style="color: red">'+value+'</p></div'); }); 
                     },
                 });
@@ -316,5 +332,28 @@
             }
 };
 </script>
+@section('script')
+    <script src="{{ asset('SummerNote/summernote-bs4.min.js') }}"></script>
+    <script>
+        $(function () {
+            $('.summernote').summernote({
+                tabSize: 2,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['fontsize', ['fontsize']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['table', ['table']],
+                    ['view', ['undo','redo','codeview']]
+                ]
+            });
 
+            
+
+        });
+    </script>
+@endsection
 @endsection

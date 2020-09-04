@@ -16,10 +16,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/admin', function () {
+    return view('Admin.Layout');
+});
 
 Route::group(['prefix' => 'admin'], function () {
     //categories
-
     Route::get('/categories/list', 'CategoryController@index')->name('liste_categorie');
     Route::get('/categories/new', 'CategoryController@Addcat')->name('ajouter_categorie');
     Route::post('/category', 'CategoryController@store')->name('new_categorie');
@@ -34,25 +36,18 @@ Route::group(['prefix' => 'admin'], function () {
     Route::put('/sous_category/{Sous_Category}', 'SousCategoryController@update')->name('update_souscate');
     Route::delete('/souscategory/{id}', 'SousCategoryController@destroy')->name('souscategory.delete');
 
+    //Produit------------------------------------------------
 
-    Route::get('/product/new', function () {
-        return view('Admin.Products.CreateProduct');
-    });
+    Route::get('/product/new',  'ProduitController@index')->name('Produit.ajouter');
 
-
-
-    Route::post('image/delete', 'ProduitController@fileDestroy');
-
-    //
     //Rout for submitting the form datat
     Route::post('/storedata', 'ProduitController@storeData')->name('dataa');
-    // Route::get('product/update/{id}', 'ProduitController@edit')->name('annonce') ;
-    // Route::put('product/update/{id}', 'ProduitController@update')->name('updateprod');
 
     //Route for submitting dropzone data
     Route::post('/storeimgae', 'ProduitController@storeImage');
     Route::get('product/update/{id}',  'ProduitController@edit')->name('Produit.edit');
     Route::put('product/update/{id}', 'ProduitController@update')->name('updateProduit');
     Route::POST('product/updateimage/{id}', 'ProduitController@updateImage');
+    Route::post('image/delete', 'ProduitController@fileDestroy');
 });
 //

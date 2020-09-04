@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="/assets/fonts/fontawesome-all.min.css">
+
+      @yield('style')
 </head>
 
 <body id="page-top">
@@ -21,14 +23,22 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="table.html"><i class="fas fa-table"></i><span>Table</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="login.html"><i class="far fa-user-circle"></i><span>Login</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/admin"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href=""><i class="fas fa-user"></i><span>Profile</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href=""><i class="fas fa-table"></i><span>Table</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href=""><i class="far fa-user-circle"></i><span>Login</span></a></li>
                     <li class="nav-item dropdown" role="presentation"><a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href=""><i class="fas fa-archive"></i><span>Categories</span></a>
                         <div class="dropdown-menu" role="menu">
                             <a class="dropdown-item" role="presentation" href="{{ route('liste_categorie') }}"><i class="far fa-clone"></i> Liste des categories</a>
                             <a class="dropdown-item" role="presentation" href="{{  route('ajouter_categorie')}}"><i class="far fa-plus-square"></i> Ajouter une categories</a>
+                            {{-- <a class="dropdown-item" role="presentation" href="{{ route('liste_Sous_categorie') }}"><i class="far fa-clone"></i> Liste des sous-categories</a> --}}
+                            {{-- <a class="dropdown-item" role="presentation" href="{{  route('ajouter_Sous_categorie')}}"> <i class="far fa-plus-square"></i> Ajouter sous-categories</a> --}}
+                        </div>
+                    </li>
+                      <li class="nav-item dropdown" role="presentation"><a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href=""><i class="fas fa-archive"></i><span>Produits</span></a>
+                        <div class="dropdown-menu" role="menu">
+                            {{-- <a class="dropdown-item" role="presentation" href="{{ route('liste_categorie') }}"><i class="far fa-clone"></i> Liste des categories</a> --}}
+                            <a class="dropdown-item" role="presentation" href="{{  route('Produit.ajouter')}}"><i class="far fa-plus-square"></i>Ajouter Produit</a>
                             {{-- <a class="dropdown-item" role="presentation" href="{{ route('liste_Sous_categorie') }}"><i class="far fa-clone"></i> Liste des sous-categories</a> --}}
                             {{-- <a class="dropdown-item" role="presentation" href="{{  route('ajouter_Sous_categorie')}}"> <i class="far fa-plus-square"></i> Ajouter sous-categories</a> --}}
                         </div>
@@ -160,6 +170,8 @@
     <script src="/assets/js/bs-init.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="/assets/js/theme.js"></script>
+    
+     @yield('script')
 </body>
 
 </html>
