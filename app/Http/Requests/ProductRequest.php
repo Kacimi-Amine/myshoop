@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Symfony\Component\Console\Input\Input;
 
 class ProductRequest extends FormRequest
 {
@@ -27,6 +27,7 @@ class ProductRequest extends FormRequest
 
         $rule1 = [
             'name' => ['required', 'string', 'unique:produits'],
+            'slugon' => ['required', 'string', 'unique:produits'],
 
 
             'description' => ['required', 'string', 'min:10'],
@@ -44,7 +45,9 @@ class ProductRequest extends FormRequest
         if ($this->input('typeProduct') == 'configurable') {
             $rule1 = [
                 'name' => ['required', 'string', 'unique:produits'],
-                'description' => ['required', 'string', 'min:10'],
+                'slugon' => ['required', 'string', 'unique:produits'],
+
+                'description' => ['required', 'min:7'],
                 // // 'etat_annonce' => ['required'],
                 'prixx_redution' => ['required'],
                 'prixx_redution.*' => ['required', 'Numeric'],

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Image;
 use App\Produit;
+use App\Category;
 use App\VariableProduit;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Support\Facades\Session;
+use App\Http\Requests\UpdateProduitRequest;
 
 class ProduitController extends Controller
 {
@@ -18,7 +20,7 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        //
+        return view('Admin.Products.CreateProduct', ['categories' => Category::with('sous_categories')->get()]);
     }
     /**
      * Show the form for creating a new resource.
@@ -58,11 +60,12 @@ class ProduitController extends Controller
     public function edit($id)
     {
         $prod = Produit::findorfail($id);
+        $cat = Category::with('sous_categories')->get();
         $img = Image::where('product_id', $id)->get();
         $vr = VariableProduit::where('product_id', $id)->get();
-        return view('Admin.Products.UpdateProduit', compact('prod', 'img', 'vr'));
+        return view('Admin.Products.UpdateProduit', compact('prod', 'img', 'vr', 'cat'));
     }
-    public function updateprod(Request $request, $id)
+    public function updateprod(UpdateProduitRequest $request, $id)
     {
         $prod = Produit::findorfail($id);
         $prod->name = $request->name;
@@ -86,7 +89,7 @@ class ProduitController extends Controller
      * @param  \App\Produit  $produit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProduitRequest $request, $id)
     {
         $i = 0;
         $this->updateprod($request, $id);
@@ -215,6 +218,7 @@ class ProduitController extends Controller
     }
     public function storeData(ProductRequest $request)
     {
+        // dd($request->description);
         try {
             $produit = new Produit();
             $produit->name = $request->name;
