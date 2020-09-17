@@ -52,8 +52,8 @@
                                         <br>
                                 <label>Categorie</label>
 
-                                <select class="form-control" name="categorie">
-                                    <option value="" disabled selected>Choose your category</option>
+                                <select class="form-control" name="sous_category">
+                                    <option value="" disabled >Choose your category</option>
                                    
                                     @foreach ($cat as $category)
                                        
@@ -281,7 +281,9 @@
                             if(result.etat==0){
                                 myDropzone.processQueue();
                             //    alert(result.etat,'done');
-                                 location.reload();
+                                //  location.reload();
+                 window.location.replace("/admin/products")
+
 
                             }
                            
@@ -322,7 +324,7 @@
                 // //reset dropzone
                 // $('.dropzone-previews').empty();
                 //  console.log(produitid.value);
-                 window.location.replace("/admin/product/update/"+produitid.value)
+                 window.location.replace("/admin/products")
             });
     
         }

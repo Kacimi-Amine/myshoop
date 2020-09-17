@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Image;
 use App\Produit;
 use App\Category;
+use Carbon\Carbon;
 use App\VariableProduit;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Support\Facades\Session;
+use Yajra\DataTables\Contracts\DataTable;
 use App\Http\Requests\UpdateProduitRequest;
 
 class ProduitController extends Controller
@@ -20,7 +23,29 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        return view('Admin.Products.CreateProduct', ['categories' => Category::with('sous_categories')->get()]);
+
+        // $product = Produit::with('images', 'varia');
+        // dd($product);
+        return view('Admin.Products.ListProduct');
+    }
+
+
+    public function getproduct()
+    {
+        $product = Produit::with('images', 'varia');
+
+        $produits = DataTables::of($product)->addColumn('action', function ($prod) {
+            return '<a href="product/update/' . $prod->id . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+            <a href="product/destroy/' . $prod->id .
+                '" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-edit"></i> delete</a>';
+        })->editColumn('id', 'ID: {{$id}}')
+            ->editColumn('created_at', function ($date) {
+                return $date->created_at ? with(new Carbon($date->created_at)) : '';
+            })
+
+            ->make(true);
+        // dd($product);
+        return  $produits;
     }
     /**
      * Show the form for creating a new resource.
@@ -29,7 +54,7 @@ class ProduitController extends Controller
      */
     public function create()
     {
-        //
+        return view('Admin.Products.CreateProduct', ['categories' => Category::with('sous_categories')->get()]);
     }
     /**
      * Store a newly created resource in storage.
@@ -61,8 +86,8 @@ class ProduitController extends Controller
     {
         $prod = Produit::findorfail($id);
         $cat = Category::with('sous_categories')->get();
-        $img = Image::where('product_id', $id)->get();
-        $vr = VariableProduit::where('product_id', $id)->get();
+        $img = Image::where('produit_id', $id)->get();
+        $vr = VariableProduit::where('produit_id', $id)->get();
         return view('Admin.Products.UpdateProduit', compact('prod', 'img', 'vr', 'cat'));
     }
     public function updateprod(UpdateProduitRequest $request, $id)
@@ -71,6 +96,7 @@ class ProduitController extends Controller
         $prod->name = $request->name;
         $prod->slugon = $request->slugon;
         $prod->description = $request->description;
+        // dd($request->sous_category);
         $prod->sous_category = $request->sous_category;
         $prod->type = $request->typeProduct;
         if ($request->typeProduct == 'simple') {
@@ -94,7 +120,7 @@ class ProduitController extends Controller
         $i = 0;
         $this->updateprod($request, $id);
         if ($request->input('typeProduct') == 'configurable') {
-            $varianteproduit = VariableProduit::where('product_id', "=", $id)->get();
+            $varianteproduit = VariableProduit::where('produit_id', "=", $id)->get();
             // $varianteproduit = VariableProduit::find($id);
             $nbr = count($varianteproduit);
             if (empty($request->input('prixx_initial'))) {
@@ -110,7 +136,7 @@ class ProduitController extends Controller
                 // dd(count($request->input('prixx_initial')));
                 foreach ($request->input('prixx_initial') as $item => $v) {
                     $varianteproduit = new VariableProduit();
-                    $varianteproduit->product_id = $id;
+                    $varianteproduit->produit_id = $id;
                     $varianteproduit->type = 'taille';
                     $varianteproduit->colorval = null;
                     if ($request->typeCT[$item] === 'color') {
@@ -142,7 +168,7 @@ class ProduitController extends Controller
                         // $varpro_to_delete->destroy();
                     }
                 }
-                $varianteproduit2 = VariableProduit::where('product_id', "=", $id)->get();
+                $varianteproduit2 = VariableProduit::where('produit_id', "=", $id)->get();
                 $nbr2 = count($varianteproduit2);
                 $restl2 = $nbr2 - $nbrreq;
                 //premiere boucle pour modifier
@@ -166,7 +192,7 @@ class ProduitController extends Controller
                 // dd($restl2, $nbr2, $nbrreq, $count_var_rester);
                 for ($j = 0; $j < (-$restl2); $j++) {
                     $varianteproduit = new VariableProduit();
-                    $varianteproduit->product_id = $id;
+                    $varianteproduit->produit_id = $id;
                     $varianteproduit->type = 'taille';
                     $varianteproduit->colorval = null;
                     if ($request->typeCT[$j + $nbr2] === 'color') {
@@ -204,6 +230,8 @@ class ProduitController extends Controller
                 Image::destroy($difference2);
             }
         }
+        Session::flash('message', 'produit bien modifier !');
+
         return response()->json(['status' => "success", 'produit_id' => $id, 'etat' => 0]);
     }
     /**
@@ -212,9 +240,14 @@ class ProduitController extends Controller
      * @param  \App\Produit  $produit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Produit $produit)
+    public function destroy($id)
     {
-        //
+
+        Produit::destroy($id);
+        return redirect()->back()->with([
+            'message' => 'Product deleted successfully',
+            'alert-type' => 'success'
+        ]);
     }
     public function storeData(ProductRequest $request)
     {
@@ -234,7 +267,7 @@ class ProduitController extends Controller
             }
             // if() hna l etat w moraha l contdown..
             $produit->save();
-            $product_id = $produit->id; // this give us the last inserted record id
+            $produit_id = $produit->id; // this give us the last inserted record id
             //add variable 
             if ($request->input('typeProduct') == 'configurable') {
                 //   $varianteproduit->type= $request->input('type');
@@ -247,7 +280,7 @@ class ProduitController extends Controller
                         $varianteproduit->colorval = $request->input('colorval')[$item];
                     }
                     $varianteproduit->value = $request->input('valeur')[$item];
-                    $varianteproduit->product_id = $product_id; //product id !!
+                    $varianteproduit->produit_id = $produit_id; //product id !!
                     $varianteproduit->prix_initial = $request->input('prixx_initial')[$item];
                     $varianteproduit->prix_redution = $request->input('prixx_redution')[$item];
                     $varianteproduit->prix_achat = $request->input('prixx_achat')[$item];
@@ -260,7 +293,7 @@ class ProduitController extends Controller
         }
         // $request->session()->flash('message', 'Task was successful!');
         Session::flash('message', 'produit bien ajouter!');
-        return response()->json(['status' => "success", 'produit_id' => $product_id]);
+        return response()->json(['status' => "success", 'produit_id' => $produit_id]);
     }
 
 
@@ -291,10 +324,11 @@ class ProduitController extends Controller
             }
             $request->file('file')->move(public_path() . '/uploads/images/', $imageName);
             // we are updating our image column with the help of produit id
-            $produit_image->product_id = $request->produitid;
+            $produit_image->produit_id = $request->produitid;
             $produit_image->save();
             // return redirect("/update/produit/"+$produitid );
-            Session::flash('message', 'produit bien ajouter!');
+            Session::flash('message', 'produit bien modifier !');
+            Session::flash('alert-class', 'alert-success');
 
             return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $produitid]);
         }
@@ -315,8 +349,10 @@ class ProduitController extends Controller
                 mkdir(public_path() . '/uploads/images/', 0777, true);
             }
             $request->file('file')->move(public_path() . '/uploads/images/', $imageName);
-            $produit_image->product_id = $id;
+            $produit_image->produit_id = $id;
             $produit_image->save();
+            Session::flash('message', 'produit bien modifier !');
+            Session::flash('alert-class', 'alert-success');
 
             return response()->json(['status' => "success", 'imgdata' => $original_name, 'produitid' => $id, 'etat' => 1]);
         }

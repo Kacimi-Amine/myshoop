@@ -20,7 +20,7 @@ class CreateVariableProduitsTable extends Migration
             $table->string('colorval')->nullable();
             //
             $table->string('value');
-            $table->integer('product_id')->constrained('produits')->onDelete('cascade');
+            $table->integer('produit_id')->constrained('produits')->onDelete('cascade');
             $table->float('prix_initial');
             $table->float('prix_redution');
             $table->float('prix_achat')->nullable();

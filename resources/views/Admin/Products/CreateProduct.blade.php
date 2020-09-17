@@ -38,7 +38,7 @@
                                 <textarea name="description" id="description" class="form-control summernote"></textarea>
                                 <div class="alert-danger" id="descriptionError"></div>
                                 <br>
-                                <label>Categorie</label>
+                                <label> Sous_Categorie</label>
 
                                  <select class="form-control" name="sous_category">
                                     <option value="" disabled selected>Choose your category <span class="req">*</span></option>

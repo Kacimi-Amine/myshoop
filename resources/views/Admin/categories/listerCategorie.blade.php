@@ -7,7 +7,7 @@
         <a class="btn btn-default  m-1" href="{{ route('ajouter_categorie') }}">Ajouter</a>
     </div>
 </div>
-<div class="widget-box">
+<div class="container">
     <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
         <h5>List Categories</h5>
     </div>
@@ -17,7 +17,8 @@
             <div class="alert alert-success">{{ session('message') }}</div>
         @endif
 
-    <div class="widget-content nopadding">
+    <div class="row">
+        <div class="col">
         <table class="table table-striped">
             <thead>
             <tr>
@@ -80,7 +81,7 @@
             {{-- {{ $cat->appends(request()->input())->links()}} --}}
         </div>
     </div>
-
+    </div>
 </div>
 </div>
 

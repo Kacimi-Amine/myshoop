@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title> - Mychop -</title>
       @notifyCss
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="/assets/fonts/fontawesome-all.min.css">
@@ -39,7 +40,7 @@
                         <div class="dropdown-menu" role="menu">
                             {{-- <a class="dropdown-item" role="presentation" href="{{ route('liste_categorie') }}"><i class="far fa-clone"></i> Liste des categories</a> --}}
                             <a class="dropdown-item" role="presentation" href="{{  route('Produit.ajouter')}}"><i class="far fa-plus-square"></i>Ajouter Produit</a>
-                            {{-- <a class="dropdown-item" role="presentation" href="{{ route('liste_Sous_categorie') }}"><i class="far fa-clone"></i> Liste des sous-categories</a> --}}
+                            <a class="dropdown-item" role="presentation" href="{{ route('product.index') }}"><i class="far fa-clone"></i> Liste des Produits</a>
                             {{-- <a class="dropdown-item" role="presentation" href="{{  route('ajouter_Sous_categorie')}}"> <i class="far fa-plus-square"></i> Ajouter sous-categories</a> --}}
                         </div>
                     </li>
@@ -155,6 +156,14 @@
             </div>
             </nav>
             <div class="container-fluid">
+                 @if (session('message'))
+    <div class="alert alert-{{ session('alert-type') }} alert-dismissible fade show" role="alert" id="alert-message">
+        {{ session('message') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
                 @yield('main')
             </div>
         </div>
@@ -165,10 +174,14 @@
         </footer> --}}
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
     <script src="/assets/js/jquery.min.js"></script>
+     <script src="{{ asset('/assets/js/custum.js') }}"></script>
+
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="/assets/js/chart.min.js"></script>
     <script src="/assets/js/bs-init.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="/assets/js/theme.js"></script>
     
      @yield('script')

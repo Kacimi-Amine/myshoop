@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProduitController;
+use App\Produit;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,8 +39,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::delete('/souscategory/{id}', 'SousCategoryController@destroy')->name('souscategory.delete');
 
     //Produit------------------------------------------------
-
-    Route::get('/product/new',  'ProduitController@index')->name('Produit.ajouter');
+    Route::get('/products/lista', 'ProduitController@getproduct')->name('ghdj');
+    Route::get('/products', 'ProduitController@index')->name('product.index');
+    Route::get('/product/new',  'ProduitController@create')->name('Produit.ajouter');
 
     //Rout for submitting the form datat
     Route::post('/storedata', 'ProduitController@storeData')->name('dataa');
@@ -47,6 +50,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/storeimgae', 'ProduitController@storeImage');
     Route::get('product/update/{id}',  'ProduitController@edit')->name('Produit.edit');
     Route::put('product/update/{id}', 'ProduitController@update')->name('updateProduit');
+    //get pour destroy seulement car j'appel la methode avec url
+    Route::get('product/destroy/{id}', 'ProduitController@destroy')->name('product.destroy');
     Route::POST('product/updateimage/{id}', 'ProduitController@updateImage');
     Route::post('image/delete', 'ProduitController@fileDestroy');
 });
